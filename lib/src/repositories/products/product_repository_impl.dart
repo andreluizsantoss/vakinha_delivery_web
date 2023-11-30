@@ -60,32 +60,47 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<void> save(ProductModel productModel) {
-    // TODO: implement uploadImageProduct
-    throw UnimplementedError();
-    // try {
-    //   final client = _dio.auth();
+  Future<void> save(ProductModel productModel) async {
+    try {
+      final client = _dio.auth();
+      final data = productModel.toMap();
 
-    //   if (model.id != null) {
-    //     await client.auth().put(
-    //           '/payment-types/${model.id}',
-    //           data: model.toMap(),
-    //         );
-    //   } else {
-    //     await client.auth().post(
-    //           '/payment-types',
-    //           data: model.toMap(),
-    //         );
-    //   }
-    // } on DioException catch (e, s) {
-    //   log('Erro ao salvar forma de pagamento', error: e, stackTrace: s);
-    //   throw RepositoryException(message: 'Erro ao salvar forma de pagamento');
-    // }
+      if (productModel.id != null) {
+        await client.auth().put(
+              '/products/${productModel.id}',
+              data: data,
+            );
+      } else {
+        await client.auth().post(
+              '/prodcuts',
+              data: data,
+            );
+      }
+    } on DioException catch (e, s) {
+      log('Erro ao salvar produto', error: e, stackTrace: s);
+      throw RepositoryException(message: 'Erro ao salvar produto');
+    }
   }
 
   @override
-  Future<String> uploadImageProduct(Uint8List file, String filename) {
-    // TODO: implement uploadImageProduct
-    throw UnimplementedError();
+  Future<String> uploadImageProduct(Uint8List file, String filename) async {
+    try {
+      final formData = FormData.fromMap(
+        {
+          'file': MultipartFile.fromBytes(
+            file,
+            filename: filename,
+          ),
+        },
+      );
+      final response = await _dio.auth().post(
+            '/uploads',
+            data: formData,
+          );
+      return response.data['url'];
+    } on DioException catch (e, s) {
+      log('Erro ao fazer upload do arquivo', error: e, stackTrace: s);
+      throw RepositoryException(message: 'Erro ao fazer upload do arquivo');
+    }
   }
 }
