@@ -14,7 +14,7 @@ enum MenuEnum {
   ),
 
   orders(
-    '/order/',
+    '/order',
     'order_ico.png',
     'order_ico_selected.png',
     'Pedidos do dia',
