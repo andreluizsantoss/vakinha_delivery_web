@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:mobx/mobx.dart';
 
-import '../../models/product_model.dart';
-import '../../repositories/products/product_repository.dart';
+import '../../../models/product_model.dart';
+import '../../../repositories/products/product_repository.dart';
 part 'products_controller.g.dart';
 
 enum ProductStateStatus {
@@ -44,7 +44,13 @@ abstract class ProductsControllerBase with Store {
         error: e,
         stackTrace: s,
       );
-      _errorMessage = 'Erro ao carregar os produtos';
+      // _errorMessage = 'Erro ao carregar os produtos';
     }
+  }
+
+  @action
+  Future<void> filterByName(String name) async {
+    _filterName = name;
+    await loadProdcuts();
   }
 }

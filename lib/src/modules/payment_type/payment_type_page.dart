@@ -20,7 +20,6 @@ class PaymentTypePage extends StatefulWidget {
 class _PaymentTypePageState extends State<PaymentTypePage>
     with Loader, Messages {
   final controller = Modular.get<PaymentTypeController>();
-
   final disposers = <ReactionDisposer>[];
 
   @override

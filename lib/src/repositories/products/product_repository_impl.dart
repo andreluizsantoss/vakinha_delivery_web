@@ -72,7 +72,7 @@ class ProductRepositoryImpl implements ProductRepository {
             );
       } else {
         await client.auth().post(
-              '/prodcuts',
+              '/products',
               data: data,
             );
       }

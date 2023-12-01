@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:mobx/mobx.dart';
 
+import '../../../core/ui/helpers/debouncer.dart';
+import '../../../core/ui/helpers/loader.dart';
+import '../../../core/ui/helpers/messages.dart';
 import '../../../core/ui/widgets/base_header.dart';
-import '../products_controller.dart';
+import 'products_controller.dart';
 import 'widgets/product_item.dart';
 
 class ProductsPage extends StatefulWidget {
@@ -12,8 +17,40 @@ class ProductsPage extends StatefulWidget {
   State<ProductsPage> createState() => _ProductsPageState();
 }
 
-class _ProductsPageState extends State<ProductsPage> {
+class _ProductsPageState extends State<ProductsPage> with Loader, Messages {
   final controller = Modular.get<ProductsController>();
+  late final ReactionDisposer statusDisposer;
+  final debouncer = Debouncer(milliseconds: 400);
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      statusDisposer = reaction((_) => controller.status, (status) {
+        switch (status) {
+          case ProductStateStatus.initial:
+            break;
+          case ProductStateStatus.loading:
+            showLoader();
+            break;
+          case ProductStateStatus.loaded:
+            hideLoader();
+            break;
+          case ProductStateStatus.error:
+            hideLoader();
+            showError('Erro buscar produtos');
+            break;
+        }
+      });
+      controller.loadProdcuts();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    statusDisposer();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,22 +62,34 @@ class _ProductsPageState extends State<ProductsPage> {
           BaseHeader(
             title: 'ADMINISTRAR PRODUTOS',
             buttonLabel: 'ADICIONAR PRODUTO',
-            buttonPressed: () {},
+            buttonPressed: () async {
+              await Modular.to.pushNamed('/product/detail');
+              controller.loadProdcuts();
+            },
+            searchChange: (value) {
+              debouncer.call(() {
+                controller.filterByName(value);
+              });
+            },
           ),
           const SizedBox(
             height: 50,
           ),
           Expanded(
-            child: GridView.builder(
-              itemCount: 10,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                mainAxisExtent: 280,
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 10,
-                maxCrossAxisExtent: 280,
-              ),
-              itemBuilder: (context, index) {
-                return const ProductItem();
+            child: Observer(
+              builder: (_) {
+                return GridView.builder(
+                  itemCount: controller.products.length,
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    mainAxisExtent: 280,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 10,
+                    maxCrossAxisExtent: 280,
+                  ),
+                  itemBuilder: (context, index) {
+                    return ProductItem(product: controller.products[index]);
+                  },
+                );
               },
             ),
           ),
