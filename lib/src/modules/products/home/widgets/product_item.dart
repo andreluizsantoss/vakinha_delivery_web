@@ -5,6 +5,7 @@ import '../../../../core/env/env.dart';
 import '../../../../core/extensions/formatter_extensions.dart';
 import '../../../../core/ui/styles/text_styles.dart';
 import '../../../../models/product_model.dart';
+import '../products_controller.dart';
 
 class ProductItem extends StatelessWidget {
   final ProductModel product;
@@ -58,7 +59,7 @@ class ProductItem extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Modular.to.pushNamed('/product/detail');
+                      context.read<ProductsController>().editProduct(product);
                     },
                     child: const Text('Editar'),
                   ),
