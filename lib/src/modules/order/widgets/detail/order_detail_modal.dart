@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/formatter_extensions.dart';
 import '../../../../core/ui/helpers/size_extensions.dart';
+import '../../../../core/ui/styles/app_styles.dart';
 import '../../../../core/ui/styles/text_styles.dart';
+import 'widgets/order_botton_bar.dart';
+import 'widgets/order_info.tile.dart';
 import 'widgets/order_product_item.dart';
 
 class OrderDetailModal extends StatefulWidget {
@@ -71,7 +75,46 @@ class _OrderDetailModalState extends State<OrderDetailModal> {
                   ],
                 ),
                 const Divider(),
-                const OrderProductItem(),
+                ...List.generate(3, (index) => index)
+                    .map((e) => const OrderProductItem())
+                    .toList(),
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total do Pedido',
+                        style: context.textStyles.textExtraBold.copyWith(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        200.0.currencyPTBR,
+                        style: context.textStyles.textExtraBold.copyWith(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                OrderInfoTile(
+                  label: 'Endereço de entrega: ',
+                  info: 'Avenida sei lá',
+                ),
+                const Divider(),
+                OrderInfoTile(
+                  label: 'Forma de Pagamento: ',
+                  info: 'Cartão de crédito',
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                OrderBottonBar()
               ],
             ),
           ),
