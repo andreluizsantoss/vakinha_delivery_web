@@ -17,6 +17,12 @@ class _MenuBarState extends State<MenuBar> {
   var colapsed = false;
 
   @override
+  void initState() {
+    selectedMenu = MenuEnum.findByPath(Modular.to.path);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),

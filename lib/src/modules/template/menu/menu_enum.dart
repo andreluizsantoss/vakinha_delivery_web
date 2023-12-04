@@ -31,4 +31,13 @@ enum MenuEnum {
     this.assetIconSelected,
     this.label,
   );
+
+  static MenuEnum? findByPath(String path) {
+    final menu =
+        MenuEnum.values.where((element) => path.contains(element.route));
+    if (menu.isNotEmpty) {
+      return menu.first;
+    }
+    return null;
+  }
 }
